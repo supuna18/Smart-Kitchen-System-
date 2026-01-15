@@ -1,0 +1,10 @@
+# React / Node garbage
+node_modules/
+dist/
+.env
+
+# .NET / C# garbage
+bin/
+obj/
+.vscode/
+*.user
