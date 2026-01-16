@@ -1,20 +1,20 @@
-/* Google Font */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+/* Google Fonts - Professional Typography */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* GLOBAL RESET */
 * {
-  box-sizing: border-box; /* මේකෙන් තමයි padding නිසා layout කැඩෙන එක නවතින්නේ */
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: 'Poppins', sans-serif;
-  background-color: #eef2f5;
-  overflow-x: hidden; /* හරහට ස්ක්‍රෝල් වෙන එක නවත්වනවා */
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  overflow-x: hidden;
 }
 
 /* =========================================
-   1. WAITER APP STYLES
+   1. WAITER APP STYLES (RESPONSIVE WEB)
    ========================================= */
 
 .waiter-container {
@@ -22,79 +22,201 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
   padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
+/* Desktop Card with Elegant Shadow */
 .mobile-frame {
   background: white;
   width: 100%;
-  max-width: 400px; /* උපරිම පළල (Desktop වලදී මේ ගානට නවතිනවා) */
-  min-height: 700px;
-  border-radius: 30px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-  padding: 30px;
+  max-width: 850px;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(212, 175, 55, 0.15), 0 2px 8px rgba(0,0,0,0.1);
+  padding: 50px;
   display: flex;
   flex-direction: column;
   position: relative;
-  border: 8px solid #333; /* Phone Bezel Effect */
+  border: 1px solid rgba(212, 175, 55, 0.1);
 }
 
-/* --- MOBILE RESPONSIVENESS (Phone එකෙන් බැලුවොත්) --- */
-@media (max-width: 600px) {
-  .waiter-container {
-    padding: 0;
-    background: white; /* Phone එකේදී Gradient එක එපා */
-    align-items: flex-start;
-  }
-
-  .mobile-frame {
-    max-width: 100%;
-    height: 100vh; /* Screen එක පුරවන්න */
-    border-radius: 0; /* රවුම් මුලු අයින් කරනවා */
-    border: none; /* Bezel එක අයින් කරනවා */
-    box-shadow: none;
-    min-height: auto;
-  }
+.logo-area { 
+  text-align: center; 
+  margin-bottom: 40px; 
+  padding-bottom: 25px;
+  border-bottom: 2px solid;
+  border-image: linear-gradient(to right, transparent, #d4af37, transparent) 1;
 }
 
-.logo-area { text-align: center; margin-bottom: 30px; margin-top: 20px; }
-.logo-area h1 { margin: 0; color: #ff4500; font-size: 28px; }
-.logo-area p { color: #888; margin: 0; font-size: 14px; }
+.logo-area h1 { 
+  margin: 0 0 8px 0; 
+  color: #d4af37;
+  font-family: 'Playfair Display', serif;
+  font-size: 36px; 
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(212, 175, 55, 0.1);
+}
 
-.input-group { display: flex; flex-direction: column; gap: 20px; margin-top: 10px; }
+.logo-area p { 
+  color: #6c757d; 
+  margin: 0; 
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
 
-label { font-size: 14px; color: #555; font-weight: 600; margin-bottom: -10px; }
+/* Desktop Input Grid with Enhanced Styling */
+.input-group { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 25px; 
+  margin-top: 15px; 
+}
+
+label { 
+  font-size: 13px; 
+  color: #495057; 
+  font-weight: 600; 
+  margin-bottom: 8px; 
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
 
 .custom-input {
-  padding: 15px;
-  border: 2px solid #eee;
-  border-radius: 12px;
-  font-size: 16px;
-  background: #f9f9f9;
-  color: #333;
-  transition: 0.3s;
   width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  font-size: 15px;
+  background: #f8f9fa;
+  color: #212529;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
 }
 
-.custom-input:focus { border-color: #ff4500; outline: none; background: white; }
+.custom-input:focus { 
+  border-color: #d4af37; 
+  outline: none; 
+  background: white;
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+}
 
 .send-btn {
-  margin-top: auto; /* බොත්තම පහලටම යවන්න */
-  margin-bottom: 20px;
-  padding: 18px;
-  background: #ff4500;
+  margin-top: 30px;
+  padding: 16px;
+  background: linear-gradient(135deg, #d4af37 0%, #c9a134 100%);
   color: white;
   border: none;
   border-radius: 12px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 5px 15px rgba(255, 69, 0, 0.4);
-  transition: transform 0.2s;
+  width: 100%;
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.send-btn:active { transform: scale(0.95); }
+.send-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+}
+
+.send-btn:active { 
+  transform: translateY(0); 
+}
+
+/* --- WAITER LIVE TRACKING STYLES --- */
+
+.waiter-orders-area {
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 2px solid;
+  border-image: linear-gradient(to right, transparent, #d4af37, transparent) 1;
+}
+
+.waiter-orders-area h3 {
+  font-size: 14px; 
+  color: #6c757d; 
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+}
+
+/* Desktop Grid Layout for Orders */
+.waiter-orders-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.waiter-order-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  border-left: 4px solid #d4af37;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+  animation: slideIn 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.waiter-order-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.15);
+}
+
+.w-card-left { display: flex; flex-direction: column; gap: 4px; }
+.w-table { font-weight: 700; font-size: 13px; color: #d4af37; text-transform: uppercase; letter-spacing: 0.5px; }
+.w-food { font-size: 15px; color: #212529; font-weight: 600; }
+
+.badge {
+  padding: 6px 12px; 
+  border-radius: 20px; 
+  font-size: 10px; 
+  font-weight: 700; 
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* --- MOBILE RESPONSIVENESS (Phone View) --- */
+@media (max-width: 768px) {
+  .waiter-container {
+    padding: 0;
+    align-items: flex-start;
+    background: white;
+  }
+
+  .mobile-frame {
+    box-shadow: none;
+    border-radius: 0;
+    padding: 20px;
+    max-width: 100%;
+    min-height: 100vh;
+    border: none;
+  }
+
+  .logo-area h1 {
+    font-size: 28px;
+  }
+
+  .input-group {
+    grid-template-columns: 1fr;
+  }
+
+  .waiter-orders-list {
+    display: flex;
+    flex-direction: column;
+  }
+}
 
 /* =========================================
    2. KITCHEN DISPLAY STYLES
@@ -102,147 +224,202 @@ label { font-size: 14px; color: #555; font-weight: 600; margin-bottom: -10px; }
 
 .kitchen-container {
   min-height: 100vh;
-  background-color: #121212;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
   color: white;
-  padding: 30px;
+  padding: 40px;
 }
 
 .kitchen-header {
-  display: flex;
-  justify-content: space-between;
+  display: flex; 
+  justify-content: space-between; 
   align-items: center;
-  border-bottom: 1px solid #333;
-  padding-bottom: 20px;
-  margin-bottom: 30px;
+  border-bottom: 3px solid #d4af37;
+  padding-bottom: 25px; 
+  margin-bottom: 40px;
+  background: rgba(212, 175, 55, 0.05);
+  padding: 25px;
+  border-radius: 15px;
 }
 
-.kitchen-header h2 { color: #ffcc00; margin: 0; font-size: clamp(20px, 4vw, 32px); /* Font size ඉබේ වෙනස් වෙන්න */ text-transform: uppercase; letter-spacing: 2px; }
+.kitchen-header h2 { 
+  color: #d4af37;
+  margin: 0; 
+  font-size: clamp(22px, 4vw, 38px);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  text-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+}
 
 .orders-grid {
   display: grid;
-  /* Responsive Grid Magic: Screen එකේ ඉඩ අනුව කාඩ් ගාන තීරණය වෙනවා */
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-  gap: 25px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+  gap: 30px;
 }
 
 .kitchen-card {
-  background: #1e1e1e;
-  border-radius: 15px;
-  padding: 20px;
-  border-left: 6px solid #ffcc00;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%);
+  border-radius: 16px;
+  padding: 25px;
+  border-left: 5px solid #d4af37;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4), 0 0 1px rgba(212, 175, 55, 0.5);
   animation: slideIn 0.4s ease;
   display: flex;
   flex-direction: column;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(212, 175, 55, 0.1);
 }
 
-.status-pending { border-left-color: #ffcc00; }
-.status-cooking { border-left-color: #00bfff; background: #16222a; }
-.status-ready { border-left-color: #00ff00; opacity: 0.6; }
+.kitchen-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 35px rgba(212, 175, 55, 0.2), 0 0 1px rgba(212, 175, 55, 0.8);
+}
 
-.card-header { display: flex; justify-content: space-between; margin-bottom: 15px; color: #888; font-size: 13px; font-weight: bold; }
-.card-body { flex-grow: 1; } 
-.card-body h3 { margin: 0 0 5px 0; font-size: 22px; color: white; }
-.card-body h4 { margin: 0; font-size: 18px; color: #ddd; font-weight: 400; }
+/* --- STATUS COLORS & ANIMATIONS --- */
 
-.card-actions { margin-top: 20px; display: flex; gap: 10px; }
+/* 1. PENDING - Golden Yellow */
+.status-pending { border-left-color: #d4af37; background: linear-gradient(145deg, #2a2a2a 0%, #252520 100%); }
+.st-pending { border-left-color: #d4af37; background: linear-gradient(145deg, #2a2a2a 0%, #252520 100%); }
+.b-pending { background: linear-gradient(135deg, #d4af37 0%, #c9a134 100%); color: #1a1a1a; font-weight: 700; }
+
+/* 2. COOKING - White Accent */
+.status-cooking { 
+  border-left-color: #ffffff; 
+  background: linear-gradient(145deg, #2d2d2d 0%, #242424 100%);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+.st-cooking { 
+  border-left-color: #ffffff; 
+  background: linear-gradient(145deg, #2d2d2d 0%, #242424 100%);
+}
+.b-cooking { 
+  background: white; 
+  color: #1a1a1a; 
+  animation: pulse 1.5s infinite;
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* 3. READY - Golden Green */
+.status-ready { 
+  border-left-color: #c9a134; 
+  background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+.st-ready { 
+  border-left-color: #c9a134; 
+  background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%);
+  border: 1px solid #d4af37;
+}
+.b-ready { 
+  background: linear-gradient(135deg, #d4af37 0%, #c9a134 100%);
+  color: #1a1a1a;
+  font-weight: 700;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+  animation: glow 2s infinite;
+}
+
+.card-header { 
+  display: flex; 
+  justify-content: space-between; 
+  margin-bottom: 18px; 
+  color: #999; 
+  font-size: 12px; 
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.card-body h3 { 
+  margin: 0 0 8px 0; 
+  font-size: 24px; 
+  color: #d4af37;
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+}
+
+.card-body h4 { 
+  margin: 0; 
+  font-size: 18px; 
+  color: #e9ecef;
+  font-weight: 500;
+}
+
+.card-actions { 
+  margin-top: 25px; 
+  display: flex; 
+  gap: 12px; 
+}
 
 .action-btn {
-  flex: 1;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-  transition: 0.2s;
+  flex: 1; 
+  padding: 14px; 
+  border: none; 
+  border-radius: 10px;
+  cursor: pointer; 
+  font-weight: 700; 
+  font-size: 13px; 
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.btn-cook { background: #00bfff; color: white; }
-.btn-ready { background: #00ff00; color: black; }
-.btn-cook:hover, .btn-ready:hover { filter: brightness(1.1); }
+.btn-cook { 
+  background: white;
+  color: #1a1a1a;
+  border: 2px solid white;
+}
 
-@keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.btn-ready { 
+  background: linear-gradient(135deg, #d4af37 0%, #c9a134 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
 
-/* --- KITCHEN MOBILE ADJUSTMENTS --- */
+.btn-cook:hover { 
+  background: #f8f9fa;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+}
+
+.btn-ready:hover { 
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+}
+
+@keyframes slideIn { 
+  from { transform: translateY(20px); opacity: 0; } 
+  to { transform: translateY(0); opacity: 1; } 
+}
+
+@keyframes pulse { 
+  0%, 100% { opacity: 1; transform: scale(1); } 
+  50% { opacity: 0.8; transform: scale(0.98); } 
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
+  50% { box-shadow: 0 0 25px rgba(212, 175, 55, 0.8); }
+}
+
+/* Mobile Kitchen Fix */
 @media (max-width: 600px) {
   .kitchen-container { padding: 15px; }
-  .kitchen-header { flex-direction: column; gap: 10px; text-align: center; }
-  .orders-grid { grid-template-columns: 1fr; /* Phone එකේදී කාඩ් එක පේලියට */ }
-}
-
-/* --- WAITER LIVE TRACKING STYLES --- */
-
-.waiter-orders-area {
-  margin-top: 20px;
-  border-top: 1px solid #eee;
-  padding-top: 15px;
-  flex-grow: 1; /* ඉතිරි ඉඩ ඔක්කොම ගන්නවා */
-  overflow-y: auto; /* Orders ගොඩක් ආවොත් Scroll වෙන්න */
-}
-
-.waiter-orders-area h3 {
-  font-size: 16px;
-  color: #888;
-  margin-bottom: 15px;
-}
-
-.waiter-orders-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.waiter-order-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f8f9fa;
-  padding: 12px;
-  border-radius: 10px;
-  border-left: 5px solid #ccc;
-  transition: all 0.3s ease;
-  animation: slideIn 0.3s ease;
-}
-
-.w-card-left { display: flex; flex-direction: column; }
-.w-table { font-weight: bold; font-size: 14px; color: #555; }
-.w-food { font-size: 15px; color: #333; }
-
-.badge {
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
-/* --- DYNAMIC STATUS COLORS --- */
-
-/* 1. PENDING */
-.st-pending { border-left-color: #ffcc00; }
-.b-pending { background: #fff4cc; color: #d4a000; }
-
-/* 2. COOKING (Animation එකක් එක්ක) */
-.st-cooking { border-left-color: #00bfff; background: #e6f7ff; }
-.b-cooking { 
-  background: #00bfff; 
-  color: white; 
-  animation: pulse 1s infinite; /* ගැහෙනවා වගේ පේන්න */
-}
-
-/* 3. READY (Green & Bold) */
-.st-ready { border-left-color: #00ff00; background: #e6fffa; border: 2px solid #00ff00; }
-.b-ready { 
-  background: #00ff00; 
-  color: black; 
-  box-shadow: 0 0 10px #00ff00; /* දිලිසෙනවා */
-}
-
-.no-orders { text-align: center; color: #aaa; font-size: 14px; margin-top: 20px; }
-
-@keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.6; }
-  100% { opacity: 1; }
+  .kitchen-header { 
+    flex-direction: column; 
+    gap: 10px; 
+    text-align: center;
+    padding: 20px;
+  }
+  .kitchen-header h2 {
+    font-size: 24px;
+  }
+  .orders-grid { 
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .kitchen-card {
+    padding: 20px;
+  }
 }
