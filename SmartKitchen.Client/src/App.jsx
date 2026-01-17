@@ -36,7 +36,7 @@ function App() {
             const newOrder = { 
               id: orderId, table, food, status: 'pending', 
               time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              timestamp: new Date() // Chart sorting වලට
+              timestamp: new Date() //   For Chart sorting 
             };
             setOrders(prev => [...prev, newOrder]);
           });
