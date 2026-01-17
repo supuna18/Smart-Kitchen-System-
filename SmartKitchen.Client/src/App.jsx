@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { 
   ChefHat, Utensils, Clock, Send, CheckCircle, 
-  PlayCircle, Timer, AlertCircle, Smartphone 
-} from 'lucide-react'; // අලුත් Icons
+  PlayCircle, Activity, TrendingUp, Smartphone, LayoutDashboard 
+} from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import './App.css';
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
@@ -14,6 +15,7 @@ function App() {
   const [tableNo, setTableNo] = useState("");
   const [foodItem, setFoodItem] = useState("");
 
+  // URL Query: ?view=kitchen
   const isKitchen = new URLSearchParams(window.location.search).get('view') === 'kitchen';
   const BACKEND_URL = "http://localhost:5215/orderHub"; 
 
@@ -32,7 +34,9 @@ function App() {
           console.log("Connected!");
           connection.on("ReceiveOrder", (orderId, table, food) => {
             const newOrder = { 
-              id: orderId, table, food, status: 'pending', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+              id: orderId, table, food, status: 'pending', 
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              timestamp: new Date() // Chart sorting වලට
             };
             setOrders(prev => [...prev, newOrder]);
           });
@@ -56,57 +60,70 @@ function App() {
     if (connection) await connection.invoke("UpdateOrderStatus", orderId, newStatus);
   };
 
-  // --- KITCHEN DASHBOARD (DARK MODE) ---
+  // --- ANALYTICS LOGIC (Chart Data හදන තැන) ---
+  const chartData = useMemo(() => {
+    const counts = {};
+    orders.forEach(o => {
+      counts[o.food] = (counts[o.food] || 0) + 1;
+    });
+    return Object.keys(counts).map(key => ({
+      name: key,
+      count: counts[key]
+    })).sort((a, b) => b.count - a.count).slice(0, 5); // Top 5 Items
+  }, [orders]);
+
+  // ==========================================
+  // VIEW 1: KITCHEN DISPLAY SYSTEM (Premium Dark)
+  // ==========================================
   if (isKitchen) {
     const activeOrders = orders.filter(o => o.status !== 'ready');
-    const completedOrders = orders.filter(o => o.status === 'ready');
+    const completed = orders.filter(o => o.status === 'ready');
 
     return (
       <div className="kitchen-container">
-        <div className="kitchen-header">
-          <div className="header-left">
-            <ChefHat size={32} color="#ffcc00" />
-            <h1>Kitchen Display System</h1>
-          </div>
-          <div className="header-stats">
-            <div className="stat-box">
-              <span>Pending</span>
-              <strong>{activeOrders.length}</strong>
-            </div>
-            <div className="stat-box completed">
-              <span>Completed</span>
-              <strong>{completedOrders.length}</strong>
+        <header className="kitchen-header">
+          <div className="brand-section">
+            <ChefHat size={40} className="gold-icon" />
+            <div>
+              <h1>MASTER CHEF KDS</h1>
+              <p>Live Kitchen Operations</p>
             </div>
           </div>
-        </div>
-        
+          <div className="k-stats">
+            <div className="stat-card">
+              <span className="label">Pending</span>
+              <span className="value gold">{activeOrders.length}</span>
+            </div>
+            <div className="stat-card">
+              <span className="label">Completed</span>
+              <span className="value green">{completed.length}</span>
+            </div>
+          </div>
+        </header>
+
         <div className="orders-grid">
           {orders.map((order) => (
             <div key={order.id} className={`kitchen-card status-${order.status}`}>
-              <div className="card-top">
+              <div className="card-header">
                 <span className="order-id">#{order.id.substring(0, 4)}</span>
                 <span className="order-time"><Clock size={14}/> {order.time}</span>
               </div>
-              
-              <div className="card-content">
-                <div className="table-badge">Table {order.table}</div>
-                <h3 className="food-name">{order.food}</h3>
+              <div className="card-body">
+                <div className="table-tag">Table {order.table}</div>
+                <h2 className="food-title">{order.food}</h2>
               </div>
-              
-              <div className="card-actions">
+              <div className="card-footer">
                 {order.status === 'pending' && (
-                  <button className="btn-action btn-start" onClick={() => updateStatus(order.id, 'cooking')}>
-                    <PlayCircle size={18} /> Start Cooking
+                  <button className="btn-action start" onClick={() => updateStatus(order.id, 'cooking')}>
+                    <PlayCircle size={18}/> Start
                   </button>
                 )}
                 {order.status === 'cooking' && (
-                  <button className="btn-action btn-finish" onClick={() => updateStatus(order.id, 'ready')}>
-                    <CheckCircle size={18} /> Mark Ready
+                  <button className="btn-action ready" onClick={() => updateStatus(order.id, 'ready')}>
+                    <CheckCircle size={18}/> Ready
                   </button>
                 )}
-                {order.status === 'ready' && (
-                   <div className="status-done"><CheckCircle size={20}/> SERVED</div>
-                )}
+                {order.status === 'ready' && <div className="served-badge">SERVED</div>}
               </div>
             </div>
           ))}
@@ -115,52 +132,99 @@ function App() {
     );
   }
 
-  // --- WAITER APP (MODERN MOBILE UI) ---
+  // ==========================================
+  // VIEW 2: WAITER POS & ANALYTICS (Professional Light)
+  // ==========================================
   return (
-    <div className="waiter-container">
-      <div className="mobile-app">
-        <header className="app-header">
-          <div className="brand">
-            <Utensils color="#ff4500" />
-            <span>QuickBite POS</span>
-          </div>
-          <div className="user-icon"><Smartphone size={20}/></div>
-        </header>
-
-        <div className="input-section">
-          <h2>New Order</h2>
-          <div className="form-group">
-            <label>Table Number</label>
-            <input type="number" value={tableNo} onChange={e => setTableNo(e.target.value)} placeholder="e.g. 5" />
-          </div>
-          <div className="form-group">
-            <label>Food Item</label>
-            <input type="text" value={foodItem} onChange={e => setFoodItem(e.target.value)} placeholder="e.g. Pizza" />
-          </div>
-          <button className="btn-send" onClick={sendOrder}>
-            <Send size={18} /> Send to Kitchen
-          </button>
+    <div className="waiter-layout">
+      {/* SIDEBAR / HEADER (Responsive) */}
+      <div className="waiter-sidebar">
+        <div className="w-brand">
+          <Utensils size={32} color="#d4af37" />
+          <h1>DINO <br/><span>POS</span></h1>
         </div>
+        <div className="w-menu">
+          <button className="active"><LayoutDashboard size={20}/> Dashboard</button>
+          <button><Activity size={20}/> History</button>
+        </div>
+      </div>
 
-        <div className="live-status-section">
-          <h3><AlertCircle size={16}/> Live Status</h3>
-          <div className="status-list">
-            {[...orders].reverse().map(order => (
-              <div key={order.id} className={`status-item s-${order.status}`}>
-                <div className="item-info">
-                  <span className="t-num">T-{order.table}</span>
-                  <span className="f-name">{order.food}</span>
-                </div>
-                <div className="item-status">
-                  {order.status === 'pending' && <span className="pill p-pending"><Timer size={12}/> Pending</span>}
-                  {order.status === 'cooking' && <span className="pill p-cooking"><ChefHat size={12}/> Cooking</span>}
-                  {order.status === 'ready' && <span className="pill p-ready"><CheckCircle size={12}/> Ready</span>}
-                </div>
+      {/* MAIN CONTENT AREA */}
+      <div className="waiter-main">
+        
+        {/* SECTION 1: TOP STATS & INPUT */}
+        <div className="dashboard-top">
+          <div className="input-panel">
+            <h2><Send size={20}/> New Order</h2>
+            <div className="input-row">
+              <div className="input-wrapper">
+                <label>Table No</label>
+                <input type="number" value={tableNo} onChange={e => setTableNo(e.target.value)} placeholder="05" />
               </div>
-            ))}
-            {orders.length === 0 && <div className="empty-state">No active orders</div>}
+              <div className="input-wrapper">
+                <label>Item Name</label>
+                <input type="text" value={foodItem} onChange={e => setFoodItem(e.target.value)} placeholder="Pizza" />
+              </div>
+            </div>
+            <button className="btn-submit" onClick={sendOrder}>Send to Kitchen</button>
+          </div>
+
+          {/* NEW: LIVE CHART (Innovative Part) */}
+          <div className="analytics-panel">
+            <h2><TrendingUp size={20}/> Top Selling Items</h2>
+            <div style={{ width: '100%', height: 180 }}>
+              <ResponsiveContainer>
+                <BarChart data={chartData}>
+                  <XAxis dataKey="name" tick={{fontSize: 12}} />
+                  <Tooltip cursor={{fill: 'transparent'}} contentStyle={{borderRadius: '8px'}}/>
+                  <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#d4af37' : '#1a1f2e'} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            {chartData.length === 0 && <p className="no-data">No sales data yet</p>}
           </div>
         </div>
+
+        {/* SECTION 2: RECENT ORDERS */}
+        <div className="recent-orders-section">
+          <h3>Recent Activity</h3>
+          <div className="table-responsive">
+            <table className="orders-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Table</th>
+                  <th>Item</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...orders].reverse().map(order => (
+                  <tr key={order.id}>
+                    <td>#{order.id.substring(0,4)}</td>
+                    <td><b>T-{order.table}</b></td>
+                    <td>{order.food}</td>
+                    <td>{order.time}</td>
+                    <td>
+                      <span className={`status-pill ${order.status}`}>
+                        {order.status === 'cooking' && <PlayCircle size={10}/>}
+                        {order.status === 'ready' && <CheckCircle size={10}/>}
+                        {order.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {orders.length === 0 && <div className="empty-state">Ready for orders...</div>}
+          </div>
+        </div>
+
       </div>
     </div>
   );
