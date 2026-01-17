@@ -141,7 +141,7 @@ function App() {
       <div className="waiter-sidebar">
         <div className="w-brand">
           <Utensils size={32} color="#d4af37" />
-          <h1>DINO <br/><span>POS</span></h1>
+          <h1>MASTER CHEF KDS <br/></h1>
         </div>
         <div className="w-menu">
           <button className="active"><LayoutDashboard size={20}/> Dashboard</button>
