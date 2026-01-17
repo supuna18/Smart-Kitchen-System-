@@ -1,29 +1,51 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { 
   ChefHat, Utensils, Clock, Send, CheckCircle, 
-  PlayCircle, Activity, TrendingUp, Smartphone, LayoutDashboard 
+  PlayCircle, TrendingUp, Smartphone, LayoutDashboard, 
+  Wifi, WifiOff, Volume2 
 } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import './App.css';
+
+// සද්දයක් දාන්න පොඩි MP3 ලින්ක් එකක්
+const NOTIFICATION_SOUND = "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3";
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
 function App() {
+  // --- 1. STATE MANAGEMENT ---
   const [connection, setConnection] = useState(null);
-  const [orders, setOrders] = useState([]);
+  const [connectionStatus, setConnectionStatus] = useState("disconnected"); // Connected, Reconnecting, Disconnected
+  
+  // Initial State එක LocalStorage එකෙන් ගන්නවා (Refresh කළාට මැකෙන්නේ නෑ)
+  const [orders, setOrders] = useState(() => {
+    const saved = localStorage.getItem("kds_orders");
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [tableNo, setTableNo] = useState("");
   const [foodItem, setFoodItem] = useState("");
 
-  // URL Query: ?view=kitchen
   const isKitchen = new URLSearchParams(window.location.search).get('view') === 'kitchen';
   const BACKEND_URL = "http://localhost:5215/orderHub"; 
+  
+  // Audio Player එක Reference එකක් විදියට
+  const audioPlayer = useRef(new Audio(NOTIFICATION_SOUND));
 
+  // --- 2. DATA PERSISTENCE (LocalStorage Sync) ---
+  // Orders වෙනස් වෙන හැම වෙලාවෙම LocalStorage එකට Save කරනවා
+  useEffect(() => {
+    localStorage.setItem("kds_orders", JSON.stringify(orders));
+  }, [orders]);
+
+  // --- 3. CONNECTION LOGIC (Resiliency) ---
   useEffect(() => {
     const newConnection = new signalR.HubConnectionBuilder()
       .withUrl(BACKEND_URL)
-      .withAutomaticReconnect()
+      .withAutomaticReconnect([0, 2000, 5000, 10000]) // කැඩුනොත් තත්පර 0, 2, 5, 10 කින් ආයේ try කරනවා
       .build();
+
     setConnection(newConnection);
   }, []);
 
@@ -32,49 +54,80 @@ function App() {
       connection.start()
         .then(() => {
           console.log("Connected!");
+          setConnectionStatus("connected");
+
           connection.on("ReceiveOrder", (orderId, table, food) => {
             const newOrder = { 
               id: orderId, table, food, status: 'pending', 
-              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              timestamp: new Date() //   For Chart sorting 
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
             };
+            
             setOrders(prev => [...prev, newOrder]);
+            
+            // කුස්සියට විතරක් සද්දේ ඇහෙන්න ඕන
+            if (isKitchen) {
+              audioPlayer.current.play().catch(e => console.log("Audio blocked:", e));
+            }
           });
+
           connection.on("ReceiveStatusUpdate", (orderId, status) => {
             setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status } : o));
           });
         })
-        .catch(e => console.log("Failed: ", e));
+        .catch(e => {
+          console.log("Failed: ", e);
+          setConnectionStatus("error");
+        });
+
+      // Connection කැඩුනම අල්ලගන්න Events (Engineering Deep Dive)
+      connection.onreconnecting(() => setConnectionStatus("reconnecting"));
+      connection.onreconnected(() => setConnectionStatus("connected"));
+      connection.onclose(() => setConnectionStatus("disconnected"));
     }
-  }, [connection]);
+  }, [connection, isKitchen]);
 
   const sendOrder = async () => {
-    if (connection && tableNo && foodItem) {
+    if (connectionStatus === "connected" && tableNo && foodItem) {
       const orderId = generateId();
-      await connection.invoke("SendOrderToKitchen", orderId, tableNo, foodItem);
-      setTableNo(""); setFoodItem("");
+      try {
+        await connection.invoke("SendOrderToKitchen", orderId, tableNo, foodItem);
+        setTableNo(""); setFoodItem("");
+      } catch (err) {
+        alert("Failed to send order. Check internet!");
+      }
+    } else {
+      alert("System Offline! Please wait.");
     }
   };
 
   const updateStatus = async (orderId, newStatus) => {
-    if (connection) await connection.invoke("UpdateOrderStatus", orderId, newStatus);
+    if (connectionStatus === "connected") await connection.invoke("UpdateOrderStatus", orderId, newStatus);
   };
 
-  // --- ANALYTICS LOGIC (Chart Data හදන තැන) ---
+  const clearHistory = () => {
+    if(confirm("Clear all order history?")) {
+      setOrders([]);
+      localStorage.removeItem("kds_orders");
+    }
+  }
+
+  // --- ANALYTICS ---
   const chartData = useMemo(() => {
     const counts = {};
-    orders.forEach(o => {
-      counts[o.food] = (counts[o.food] || 0) + 1;
-    });
-    return Object.keys(counts).map(key => ({
-      name: key,
-      count: counts[key]
-    })).sort((a, b) => b.count - a.count).slice(0, 5); // Top 5 Items
+    orders.forEach(o => { counts[o.food] = (counts[o.food] || 0) + 1; });
+    return Object.keys(counts).map(key => ({ name: key, count: counts[key] })).sort((a, b) => b.count - a.count).slice(0, 5);
   }, [orders]);
 
-  // ==========================================
-  // VIEW 1: KITCHEN DISPLAY SYSTEM (Premium Dark)
-  // ==========================================
+  // --- CONNECTION STATUS BADGE ---
+  const ConnectionBadge = () => (
+    <div className={`conn-badge ${connectionStatus}`}>
+      {connectionStatus === 'connected' && <><Wifi size={14}/> Online</>}
+      {connectionStatus === 'reconnecting' && <><WifiOff size={14}/> Reconnecting...</>}
+      {connectionStatus === 'disconnected' && <><WifiOff size={14}/> Offline</>}
+    </div>
+  );
+
+  // ================= KITCHEN VIEW =================
   if (isKitchen) {
     const activeOrders = orders.filter(o => o.status !== 'ready');
     const completed = orders.filter(o => o.status === 'ready');
@@ -86,7 +139,10 @@ function App() {
             <ChefHat size={40} className="gold-icon" />
             <div>
               <h1>MASTER CHEF KDS</h1>
-              <p>Live Kitchen Operations</p>
+              <div style={{display:'flex', alignItems:'center', gap:10}}>
+                <p>Live Operations</p>
+                <ConnectionBadge />
+              </div>
             </div>
           </div>
           <div className="k-stats">
@@ -98,6 +154,7 @@ function App() {
               <span className="label">Completed</span>
               <span className="value green">{completed.length}</span>
             </div>
+            <button className="btn-clear" onClick={clearHistory}>Clear All</button>
           </div>
         </header>
 
@@ -115,7 +172,7 @@ function App() {
               <div className="card-footer">
                 {order.status === 'pending' && (
                   <button className="btn-action start" onClick={() => updateStatus(order.id, 'cooking')}>
-                    <PlayCircle size={18}/> Start
+                    <PlayCircle size={18}/> Start <Volume2 size={14} style={{marginLeft:5, opacity:0.7}}/>
                   </button>
                 )}
                 {order.status === 'cooking' && (
@@ -132,27 +189,23 @@ function App() {
     );
   }
 
-  // ==========================================
-  // VIEW 2: WAITER POS & ANALYTICS (Professional Light)
-  // ==========================================
+  // ================= WAITER VIEW =================
   return (
     <div className="waiter-layout">
-      {/* SIDEBAR / HEADER (Responsive) */}
       <div className="waiter-sidebar">
         <div className="w-brand">
           <Utensils size={32} color="#d4af37" />
-          <h1>MASTER CHEF KDS <br/></h1>
+          <h1>DINO <br/><span>POS</span></h1>
         </div>
         <div className="w-menu">
           <button className="active"><LayoutDashboard size={20}/> Dashboard</button>
-          <button><Activity size={20}/> History</button>
+          <div style={{marginTop: 'auto', padding: 10}}>
+            <ConnectionBadge />
+          </div>
         </div>
       </div>
 
-      {/* MAIN CONTENT AREA */}
       <div className="waiter-main">
-        
-        {/* SECTION 1: TOP STATS & INPUT */}
         <div className="dashboard-top">
           <div className="input-panel">
             <h2><Send size={20}/> New Order</h2>
@@ -166,12 +219,13 @@ function App() {
                 <input type="text" value={foodItem} onChange={e => setFoodItem(e.target.value)} placeholder="Pizza" />
               </div>
             </div>
-            <button className="btn-submit" onClick={sendOrder}>Send to Kitchen</button>
+            <button className="btn-submit" onClick={sendOrder} disabled={connectionStatus !== 'connected'}>
+              {connectionStatus === 'connected' ? 'Send to Kitchen' : 'System Offline'}
+            </button>
           </div>
 
-          {/* NEW: LIVE CHART (Innovative Part) */}
           <div className="analytics-panel">
-            <h2><TrendingUp size={20}/> Top Selling Items</h2>
+            <h2><TrendingUp size={20}/> Top Items</h2>
             <div style={{ width: '100%', height: 180 }}>
               <ResponsiveContainer>
                 <BarChart data={chartData}>
@@ -185,18 +239,16 @@ function App() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            {chartData.length === 0 && <p className="no-data">No sales data yet</p>}
           </div>
         </div>
 
-        {/* SECTION 2: RECENT ORDERS */}
         <div className="recent-orders-section">
           <h3>Recent Activity</h3>
           <div className="table-responsive">
             <table className="orders-table">
               <thead>
                 <tr>
-                  <th>Order ID</th>
+                  <th>ID</th>
                   <th>Table</th>
                   <th>Item</th>
                   <th>Time</th>
@@ -212,8 +264,6 @@ function App() {
                     <td>{order.time}</td>
                     <td>
                       <span className={`status-pill ${order.status}`}>
-                        {order.status === 'cooking' && <PlayCircle size={10}/>}
-                        {order.status === 'ready' && <CheckCircle size={10}/>}
                         {order.status}
                       </span>
                     </td>
@@ -221,10 +271,8 @@ function App() {
                 ))}
               </tbody>
             </table>
-            {orders.length === 0 && <div className="empty-state">Ready for orders...</div>}
           </div>
         </div>
-
       </div>
     </div>
   );
