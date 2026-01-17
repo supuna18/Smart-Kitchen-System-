@@ -64,7 +64,7 @@ function App() {
             
             setOrders(prev => [...prev, newOrder]);
             
-            // කුස්සියට විතරක් සද්දේ ඇහෙන්න ඕන
+            // Sound alert to the kitchen only 
             if (isKitchen) {
               audioPlayer.current.play().catch(e => console.log("Audio blocked:", e));
             }
