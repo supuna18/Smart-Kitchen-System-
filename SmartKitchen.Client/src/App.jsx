@@ -1,10 +1,19 @@
+//Import Section එක 
+//මෙතන import කරනවා Main react hooks and states ටික
+//useState - Data state එකක් manage කරන්න
+//useEffect - Component එක load උනාම හෝ update උනාම side effects handle කරන්න
+//useMemo - Expensive calculations optimize කරන්න
+//useRef - Mutable references create කරන්න (like audio player reference එකක්)
 import { useEffect, useState, useMemo, useRef } from 'react';
-import * as signalR from '@microsoft/signalr';
+
+import * as signalR from '@microsoft/signalr';                // SignalR library එක import කරනවා real-time communication එකට
+
+// Lucide Icons import කරනවා UI enhancement එකට
 import { 
   ChefHat, Utensils, Clock, Send, CheckCircle, 
   PlayCircle, TrendingUp, LayoutDashboard, 
   Wifi, WifiOff, Volume2, Trash2 
-} from 'lucide-react';
+} from 'lucide-react';             // Icon library එකක්
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import './App.css';
 
