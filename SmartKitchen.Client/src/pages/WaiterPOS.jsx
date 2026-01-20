@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from 'react';  //Import the use state hook from react library 
 import { Utensils, LayoutDashboard, Send, TrendingUp, PlayCircle, CheckCircle, Wifi, WifiOff } from 'lucide-react';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
