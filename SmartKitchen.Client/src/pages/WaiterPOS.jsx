@@ -3,8 +3,8 @@ import { Utensils, LayoutDashboard, Send, TrendingUp, PlayCircle, CheckCircle, W
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';     //import chart components from recharts library
 
 export default function WaiterPOS({ orders, connectionStatus, sendOrder, chartData, clearHistory }) {
-  const [tableNo, setTableNo] = useState("");
-  const [foodItem, setFoodItem] = useState("");
+  const [tableNo, setTableNo] = useState("");       //use state hook to manage table number input
+  const [foodItem, setFoodItem] = useState(""); //use state hook to manage food item input
 
   const handleSend = async () => {
     if (tableNo && foodItem) {
