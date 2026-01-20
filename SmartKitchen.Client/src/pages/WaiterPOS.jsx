@@ -2,7 +2,7 @@ import { useState } from 'react';  //Import the use state hook from react librar
 import { Utensils, LayoutDashboard, Send, TrendingUp, PlayCircle, CheckCircle, Wifi, WifiOff } from 'lucide-react';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';     //import chart components from recharts library
 
-export default function WaiterPOS({ orders, connectionStatus, sendOrder, chartData, clearHistory }) {
+export default function WaiterPOS({ orders, connectionStatus, sendOrder, chartData, clearHistory }) { //Waiter Point of Sale Component
   const [tableNo, setTableNo] = useState("");       //use state hook to manage table number input
   const [foodItem, setFoodItem] = useState(""); //use state hook to manage food item input
 
