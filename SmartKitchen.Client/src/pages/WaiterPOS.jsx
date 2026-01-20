@@ -1,6 +1,6 @@
 import { useState } from 'react';  //Import the use state hook from react library 
 import { Utensils, LayoutDashboard, Send, TrendingUp, PlayCircle, CheckCircle, Wifi, WifiOff } from 'lucide-react';
-import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';     //import chart components from recharts library
 
 export default function WaiterPOS({ orders, connectionStatus, sendOrder, chartData, clearHistory }) {
   const [tableNo, setTableNo] = useState("");
