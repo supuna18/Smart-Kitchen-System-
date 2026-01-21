@@ -82,33 +82,138 @@ h2,h3 { font-size: 18px; color: var(--dark); margin: 0 0 20px 0; display: flex; 
 /* =========================================
    KITCHEN DISPLAY (INTELLIGENT KDS)
    ========================================= */
+/* Main Container Fix */
+.full-width-fix {
+  width: 100vw; /* Viewport Width එක 100% ක් ගන්න */
+  max-width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+}
+
 .kitchen-container {
-  min-height: 100vh; background: #0f1115; color: white; padding: 30px;
+  min-height: 100vh;
+  background-color: #0f1115; /* Deep Dark Background */
+  color: white;
+  padding: 20px 40px; /* දෙපැත්තෙන් ඉඩ තියනවා */
+  display: flex;
+  flex-direction: column;
 }
 
+/* Header Redesign */
 .kitchen-header {
-  display: flex; justify-content: space-between; align-items: center;
-  padding-bottom: 20px; border-bottom: 1px solid #333; margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: #161b22;
+  border-radius: 16px;
+  border: 1px solid #30363d;
+  margin-bottom: 20px;
 }
 
-.brand-section { display: flex; align-items: center; gap: 15px; }
-.logo-wrapper { background: var(--gold); padding: 8px; border-radius: 10px; display: flex; }
-.brand-section h1 { margin: 0; font-size: 24px; font-family: 'Playfair Display', serif; }
-.beta-tag { background: #333; color: var(--gold); font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 10px; vertical-align: middle; }
-.meta-info { font-size: 12px; color: #666; margin-top: 5px; display: flex; align-items: center; gap: 10px; }
-
-.k-stats { display: flex; gap: 20px; }
-.stat-card {
-  background: #1a1f2e; padding: 10px 20px; border-radius: 8px; border: 1px solid #333;
-  display: flex; flex-direction: column; align-items: center;
+.k-stats-group {
+  display: flex;
+  align-items: center;
+  gap: 30px;
 }
-.stat-card .label { font-size: 11px; color: var(--gray); text-transform: uppercase; }
-.stat-card .value { font-size: 24px; font-weight: 700; color: white; }
-.value.success { color: var(--success); }
 
-.btn-icon { background: #333; border: none; color: #888; padding: 10px; border-radius: 8px; cursor: pointer; }
-.btn-icon:hover { color: white; background: #444; }
+.stat-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.stat-metric .label { font-size: 11px; text-transform: uppercase; color: #8b949e; letter-spacing: 1px; }
+.stat-metric .value { font-size: 28px; font-weight: 700; color: white; line-height: 1; }
+.stat-metric.warn .value { color: #f59e0b; }
+.stat-metric.success .value { color: #10b981; }
 
+.divider { width: 1px; height: 40px; background: #30363d; }
+
+/* Toolbar & Filters (New Feature) */
+.kitchen-toolbar { margin-bottom: 25px; }
+
+.filter-tabs {
+  display: inline-flex;
+  background: #161b22;
+  padding: 5px;
+  border-radius: 10px;
+  border: 1px solid #30363d;
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  color: #8b949e;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.tab:hover { color: white; background: rgba(255,255,255,0.05); }
+
+.tab.active {
+  background: #238636; /* GitHub Green like accent */
+  color: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Grid Layout Fix (Full Screen) */
+.orders-grid {
+  display: grid;
+  /* Auto-fill logic: Screen එක ලොකු වෙන්න වෙන්න කාඩ් ගාන වැඩි වෙනවා */
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+  gap: 20px;
+  width: 100%;
+}
+
+.kitchen-card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* කාඩ් ඔක්කොම එක උසට */
+  animation: slideUp 0.3s ease;
+}
+
+/* Status Colors */
+.status-pending { border-top: 4px solid #f59e0b; }
+.status-cooking { border-top: 4px solid #3b82f6; background: linear-gradient(180deg, #161b22 0%, #0d1117 100%); }
+.status-ready { border-top: 4px solid #238636; opacity: 0.7; }
+
+/* Empty State Design */
+.empty-state-kds {
+  grid-column: 1 / -1; /* මුළු ඉඩම ගන්නවා */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px;
+  color: #8b949e;
+}
+.empty-icon-bg {
+  background: #21262d;
+  padding: 20px;
+  border-radius: 50%;
+  margin-bottom: 20px;
+  color: #238636;
+}
+
+/* Responsive Fixes */
+@media (max-width: 768px) {
+  .kitchen-container { padding: 10px; }
+  .kitchen-header { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .k-stats-group { width: 100%; justify-content: space-between; }
+  .filter-tabs { width: 100%; overflow-x: auto; }
+  .tab { flex: 1; justify-content: center; white-space: nowrap; }
+}
 /* --- ORDERS GRID & CARDS --- */
 .orders-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px;
