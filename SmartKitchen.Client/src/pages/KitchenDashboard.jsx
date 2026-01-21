@@ -1,39 +1,28 @@
-import { useState, useEffect } from 'react';
-import { ChefHat, Clock, PlayCircle, CheckCircle, Trash2, Wifi, WifiOff, AlertTriangle, Flame } from 'lucide-react';
+import { useState } from 'react';
+import { ChefHat, Clock, PlayCircle, CheckCircle, Trash2, Wifi, WifiOff, Filter, Activity, Flame } from 'lucide-react';
 
 export default function KitchenDashboard({ orders, connectionStatus, updateStatus, clearHistory }) {
-  // මේකෙන් තමයි තත්පරෙන් තත්පරේ Screen එක Update කරන්නේ
-  const [now, setNow] = useState(new Date());
+  const [filter, setFilter] = useState('all'); // all, pending, cooking, ready
 
-  useEffect(() => {
-    const timer = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  // --- SE ALGORITHM: Priority Calculation ---
-  // Order එක දාලා කොච්චර වෙලාද කියලා බලලා, බර (Weight) එකක් දෙනවා.
-  const getOrderPriority = (orderTimeStr) => {
-    // String Time එක Date Object එකක් කරනවා (Note: මේක Demo එකක් නිසා අද දවස ගන්නවා)
-    const orderTime = new Date();
-    const [hours, minutes] = orderTimeStr.match(/(\d+):(\d+)/).slice(1);
-    const isPM = orderTimeStr.includes('PM');
-    orderTime.setHours(parseInt(hours) + (isPM && hours !== '12' ? 12 : 0), parseInt(minutes), 0);
-    
-    // දැනට ගත වුන කාලය (විනාඩි වලින්)
-    const elapsedMinutes = (now - orderTime) / 60000;
-    
-    if (elapsedMinutes > 10) return { level: 'CRITICAL', color: '#ef4444', score: 3 }; // විනාඩි 10 පැන්නොත්
-    if (elapsedMinutes > 5) return { level: 'WARNING', color: '#f59e0b', score: 2 };   // විනාඩි 5 පැන්නොත්
-    return { level: 'NORMAL', color: '#10b981', score: 1 };                             // අලුත් ඒවා
-  };
-
-  // Orders ෆිල්ටර් කරලා Priority අනුව Sort කරනවා (Deep Logic)
-  const sortedOrders = orders
-    .filter(o => o.status !== 'ready')
-    .map(order => ({ ...order, priority: getOrderPriority(order.time) }))
-    .sort((a, b) => b.priority.score - a.priority.score); // Critical ඒවා උඩට
-
+  // --- STATISTICS CALCULATION ---
+  const activeOrders = orders.filter(o => o.status !== 'ready');
+  const cookingOrders = orders.filter(o => o.status === 'cooking');
   const completed = orders.filter(o => o.status === 'ready');
+  
+  // Urgent Orders (විනාඩි 5ට වඩා පරණ ඒවා)
+  const urgentCount = orders.filter(o => {
+    if (o.status === 'ready') return false;
+    const orderTime = new Date();
+    // (Note: Demo logic to parse time)
+    return false; // Real logic would go here
+  }).length;
+
+  // --- FILTERING LOGIC ---
+  const filteredOrders = orders.filter(order => {
+    if (filter === 'all') return order.status !== 'ready'; // Default: Hide completed
+    if (filter === 'history') return order.status === 'ready';
+    return order.status === filter;
+  });
 
   const ConnectionBadge = () => (
     <div className={`conn-badge ${connectionStatus}`}>
@@ -42,58 +31,69 @@ export default function KitchenDashboard({ orders, connectionStatus, updateStatu
   );
 
   return (
-    <div className="kitchen-container">
+    <div className="kitchen-container full-width-fix">
+      {/* HEADER SECTION */}
       <header className="kitchen-header">
         <div className="brand-section">
           <div className="logo-wrapper">
             <ChefHat size={32} color="#1a1f2e" />
           </div>
           <div>
-            <h1>Dino Foods</h1>
+            <h1>INTELLIGENT KDS <span className="beta-tag">PRO</span></h1>
             <div className="meta-info">
-              <span>SLA Monitoring Active</span>
+              <span>System Operational</span>
               <span className="dot">•</span>
               <ConnectionBadge />
             </div>
           </div>
         </div>
         
-        <div className="k-stats">
-          <div className="stat-card">
-            <span className="label">Queue Load</span>
-            <span className="value">{sortedOrders.length}</span>
+        {/* STATS DASHBOARD */}
+        <div className="k-stats-group">
+          <div className="stat-metric">
+            <span className="label">Queue</span>
+            <span className="value">{activeOrders.length}</span>
           </div>
-          <div className="stat-card">
-            <span className="label">Completed</span>
-            <span className="value success">{completed.length}</span>
+          <div className="stat-metric warn">
+            <span className="label">Cooking</span>
+            <span className="value">{cookingOrders.length}</span>
           </div>
-          <button className="btn-icon" onClick={() => { if(confirm("Clear?")) clearHistory() }}>
+          <div className="stat-metric success">
+            <span className="label">Done</span>
+            <span className="value">{completed.length}</span>
+          </div>
+          <div className="divider"></div>
+          <button className="btn-icon" onClick={() => { if(confirm("Clear All Data?")) clearHistory() }}>
             <Trash2 size={20}/>
           </button>
         </div>
       </header>
 
-      <div className="orders-grid">
-        {sortedOrders.map((order) => (
-          <div key={order.id} className={`kitchen-card priority-${order.priority.level.toLowerCase()} status-${order.status}`}>
-            
-            {/* Critical ඒවාට විශේෂ Alert එකක් */}
-            {order.priority.level === 'CRITICAL' && (
-              <div className="critical-banner">
-                <AlertTriangle size={14} /> SLA BREACHED - RUSH ORDER
-              </div>
-            )}
+      {/* TOOLBAR (FILTERS) */}
+      <div className="kitchen-toolbar">
+        <div className="filter-tabs">
+          <button className={`tab ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>
+            <Activity size={16}/> Active Zone
+          </button>
+          <button className={`tab ${filter === 'pending' ? 'active' : ''}`} onClick={() => setFilter('pending')}>
+            <Clock size={16}/> Pending
+          </button>
+          <button className={`tab ${filter === 'cooking' ? 'active' : ''}`} onClick={() => setFilter('cooking')}>
+            <Flame size={16}/> Cooking
+          </button>
+          <button className={`tab ${filter === 'history' ? 'active' : ''}`} onClick={() => setFilter('history')}>
+            <CheckCircle size={16}/> History
+          </button>
+        </div>
+      </div>
 
+      {/* ORDERS GRID */}
+      <div className="orders-grid">
+        {filteredOrders.map((order) => (
+          <div key={order.id} className={`kitchen-card status-${order.status}`}>
             <div className="card-header">
               <span className="order-id">#{order.id.substring(0, 4)}</span>
-              <div className="timer-badge">
-                <Clock size={14}/> 
-                {/* ගත වූ කාලය ගණනය කිරීම */}
-                {Math.floor((now - new Date().setHours(
-                    parseInt(order.time.split(':')[0]) + (order.time.includes('PM') && order.time.split(':')[0] !== '12' ? 12 : 0),
-                    parseInt(order.time.split(':')[1])
-                )) / 60000)} min ago
-              </div>
+              <span className="order-time"><Clock size={14}/> {order.time}</span>
             </div>
 
             <div className="card-body">
@@ -109,16 +109,19 @@ export default function KitchenDashboard({ orders, connectionStatus, updateStatu
               )}
               {order.status === 'cooking' && (
                 <button className="btn-action cooking" onClick={() => updateStatus(order.id, 'ready')}>
-                  <Flame size={18} className="pulse-icon"/> Cooking...
+                  <Flame size={18} className="pulse-icon"/> Finish
                 </button>
               )}
+              {order.status === 'ready' && <div className="served-badge">COMPLETED</div>}
             </div>
           </div>
         ))}
-        {sortedOrders.length === 0 && (
+        
+        {filteredOrders.length === 0 && (
           <div className="empty-state-kds">
-            <CheckCircle size={48} opacity={0.2}/>
-            <p>All caught up! No pending orders.</p>
+            <div className="empty-icon-bg"><CheckCircle size={48} /></div>
+            <h3>No orders in this view</h3>
+            <p>Waiting for new tickets...</p>
           </div>
         )}
       </div>
