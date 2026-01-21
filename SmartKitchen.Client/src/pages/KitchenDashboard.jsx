@@ -39,7 +39,7 @@ export default function KitchenDashboard({ orders, connectionStatus, updateStatu
             <ChefHat size={32} color="#1a1f2e" />
           </div>
           <div>
-            <h1>INTELLIGENT KDS <span className="beta-tag">PRO</span></h1>
+            <h1>Dino<span className="beta-tag"> Foods</span></h1>
             <div className="meta-info">
               <span>System Operational</span>
               <span className="dot">•</span>
