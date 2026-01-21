@@ -15,5 +15,13 @@ namespace SmartKitchen.Server.Hubs
         {
             await Clients.All.SendAsync("ReceiveStatusUpdate", orderId, status);
         }
+
+
+
+
+
+
+
+
     }
 }
