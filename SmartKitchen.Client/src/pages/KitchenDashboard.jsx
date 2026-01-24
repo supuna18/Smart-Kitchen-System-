@@ -27,7 +27,7 @@ export default function KitchenDashboard({ orders, connectionStatus, updateStatu
   const ConnectionBadge = () => (
     <div className={`conn-badge ${connectionStatus}`}>
       {connectionStatus === 'connected' ? <><Wifi size={14}/> Online</> : <><WifiOff size={14}/> Offline</>}
-    </div>
+    </div>  
   );
 
   return (
