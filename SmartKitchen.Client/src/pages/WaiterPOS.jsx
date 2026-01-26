@@ -23,7 +23,7 @@ export default function WaiterPOS({ orders, connectionStatus, sendOrder, chartDa
   );
 
   return (
-    <div className="waiter-layout">
+    <div className="waiter-layout"> {/* Main container for the Waiter POS layout */}
       <div className="waiter-sidebar">
         <div className="w-brand">
           <Utensils size={32} color="#d4af37" />
