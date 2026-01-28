@@ -27,7 +27,7 @@ export default function WaiterPOS({ orders, connectionStatus, sendOrder, chartDa
       <div className="waiter-sidebar">
         <div className="w-brand">
           <Utensils size={32} color="#d4af37" />
-          <h1>DINO Foods</h1>
+          <h1>DINO Foods AK</h1>  
         </div>
         <div className="w-menu">
           <button className="active"><LayoutDashboard size={20}/> Dashboard</button>
