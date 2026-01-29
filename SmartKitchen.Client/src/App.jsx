@@ -22,7 +22,7 @@ function App() {
     return (
       <KitchenDashboard 
         orders={orders} 
-        connectionStatus={connectionStatus} 
+        connectionStatus={connectionStatus}  // 'connected', 'disconnected', 'error'
         updateStatus={updateStatus} 
         clearHistory={clearHistory}
       />
