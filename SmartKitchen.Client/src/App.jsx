@@ -10,7 +10,7 @@ function App() {
   // 2. අපේ Custom Hook එකෙන් Logic ඔක්කොම එලියට ගන්නවා
   const { 
     orders, 
-    connectionStatus, 
+    connectionStatus,  // 'connected', 'disconnected', 'error'
     sendOrder, 
     updateStatus, 
     clearHistory, 
